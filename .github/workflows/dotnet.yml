@@ -47,13 +47,13 @@ jobs:
     - name: Build Debug
       if: ${{ github.event_name != 'release' }}
       run: |
-        echo "github.event_name: ${{ github.event_name }}"
-        msbuild /t:Rebuild /p:Configuration=Debug,Platform=x64
+        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+        msbuild /t:Rebuild /p:Configuration=Debug,Platform=x64 .\*.csproj
     - name: Build Release
       if: ${{ github.event_name == 'release' }}
       run: |
         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
-        msbuild /t:Rebuild /p:Configuration=Release,Platform=x64
+        msbuild /t:Rebuild /p:Configuration=Release,Platform=x64 .\*.csproj
     - name: Dotnet Debug Tests
       if: ${{ github.event_name != 'release' }}
       run: |
