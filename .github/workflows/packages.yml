@@ -60,9 +60,7 @@ jobs:
         if(Test-File bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*.nupkg) {
           $pkg = Get-ChildItem bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*.nupkg
         }
-        - name: Push Nupkg to GitHub Packages
-      # You may pin to the exact commit or the version.
-      # uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@462b6006e5c90f732d030b0ace2c3e7ee9d550bc
+
 #     - name: Dotnet Debug Tests
 #       if: ${{ github.event_name != 'release' }}
 #       run: |
