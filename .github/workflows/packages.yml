@@ -57,6 +57,12 @@ jobs:
       run: |
         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
         msbuild /t:Rebuild /p:Configuration=Release,Platform=x64 .\CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+        if(Test-File bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*.nupkg) {
+          $pkg = Get-ChildItem bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*.nupkg
+        }
+        - name: Push Nupkg to GitHub Packages
+      # You may pin to the exact commit or the version.
+      # uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@462b6006e5c90f732d030b0ace2c3e7ee9d550bc
 #     - name: Dotnet Debug Tests
 #       if: ${{ github.event_name != 'release' }}
 #       run: |
@@ -67,7 +73,23 @@ jobs:
 #       run: |
 #         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
 #         dotnet test -c Release --no-build
-    - name: Publish
+
+    - name: GitHub Packages
+      if: ${{ github.event_name != 'release' }}
+      uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
+      with:
+        # Path of NuPkg
+        nupkg-path: ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk\bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*nupkg
+        # package repository owner
+        repo-owner: sharpninja
+        # user account
+        gh-user: sharpninja
+        # access token
+        token: ${{ secrets.GITHUB_TOKEN }}
+        # skip publishing duplicated package(s)
+        skip-duplicate: true
+        
+    - name: Nuget Publish
       if: ${{ github.event_name == 'release' }}
       run: | 
         $outPath = (Join-Path . -Child packages)
