@@ -1,0 +1,80 @@
+name: .NET
+
+on:
+  release:
+    types: [released]
+  push:
+    branches: [ master, main, release/* ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Event
+      env:       
+        event_name: ${{ github.event_name }}
+      run: echo "event_name $env:event_name"
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+      
+#     - name: Setup .NET
+#       uses: actions/setup-dotnet@v1
+#       with:
+#         dotnet-version: 6.0.x
+#         include-prerelease: true
+        
+    - name: Setup Scoop
+      run: |
+        iwr -useb get.scoop.sh | iex
+        scoop install gitversion
+        GitVersion
+        
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build Debug
+      if: ${{ github.event_name != 'release' }}
+      run: |
+        echo "github.event_name: ${{ github.event_name }}"
+        dotnet build -c Debug --no-restore 
+    - name: Build Release
+      if: ${{ github.event_name == 'release' }}
+      run: |
+        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+        dotnet build -c Release --no-restore 
+    - name: Dotnet Debug Tests
+      if: ${{ github.event_name != 'release' }}
+      run: |
+        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+        dotnet test -c Debug --no-restore
+    - name: Dotnet Release Tests
+      if: ${{ github.event_name == 'release' }}
+      run: |
+        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+        dotnet test -c Release --no-restore
+    - name: Publish
+      if: ${{ github.event_name == 'release' }}
+      run: | 
+        $outPath = (Join-Path . -Child packages)
+        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+        dotnet pack -c Release --no-restore --include-source --no-build -o $outPath 
+        
+        gci $outPath\*.nupkg -ErrorAction Stop
+        gci $outPath\*.snupkg -ErrorAction Stop
+        
+        gci $outPath\*.nupkg | forEach-Object -process {
+          dotnet nuget push $_ -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
+        }
+        gci $outPath\*.snupkg | forEach-Object -process {
+          dotnet nuget push $_ -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
+        }
+        
