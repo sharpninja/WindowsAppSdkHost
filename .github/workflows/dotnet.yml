@@ -1,4 +1,4 @@
-name: .NET
+name: Packages
 
 on:
   release:
@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     - name: Event
