@@ -31,6 +31,7 @@ jobs:
       uses: microsoft/setup-msbuild@master
       with:
         vs-prerelease: true
+        vs-version: 17
         
 #     - name: Setup .NET
 #       uses: actions/setup-dotnet@v1
