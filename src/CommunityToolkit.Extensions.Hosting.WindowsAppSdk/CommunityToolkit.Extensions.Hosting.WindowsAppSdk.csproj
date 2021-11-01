@@ -11,6 +11,18 @@
       <Platforms>x64</Platforms>
       <LangVersion>10.0</LangVersion>
       <RootNamespace>CommunityToolkit.Extensions.Hosting</RootNamespace>
+      <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+      <Company>Payton Byrd (The Sharp Ninja) &lt;ninja@thesharp.ninja&gt;</Company>
+      <Description>Allows hosting a Windows App SDK Application in an `IHost` that manages the lifecycle of the hosted Application.</Description>
+      <Copyright>2021 - All Rights Reserved</Copyright>
+      <PackageProjectUrl>https://github.com/sharpninja/WindowsAppSdkHost</PackageProjectUrl>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
+      <RepositoryUrl>https://github.com/sharpninja/WindowsAppSdkHost</RepositoryUrl>
+      <RepositoryType>git</RepositoryType>
+      <PackageTags>WindowsAppSdk WinUI3 Hosting</PackageTags>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>
+      <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+      <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,9 +34,20 @@
     <EmbeddedResource Remove="Strings.resx" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
 
 
   <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-rc.2.21480.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-rc.2.21480.5" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0-preview3" />
