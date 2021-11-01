@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+      <TargetFramework>net5.0-windows10.0.20348.0</TargetFramework>
+      <TargetPlatformMinVersion>10.0.20348.0</TargetPlatformMinVersion>
+      <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+      <UseWinUI>true</UseWinUI>
+      <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+      <PlatformTarget>x64</PlatformTarget>
+      <Platforms>x64</Platforms>
+      <LangVersion>10.0</LangVersion>
+      <RootNamespace>CommunityToolkit.Extensions.Hosting</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="IServiceFactoryAdapter.cs" />
+    <Compile Remove="ServiceFactoryAdapter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Strings.resx" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-rc.2.21480.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-rc.2.21480.5" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0-preview3" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <Resource Include="Strings.resx" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

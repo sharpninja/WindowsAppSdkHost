@@ -1,0 +1,27 @@
+﻿<Window
+    x:Class="HostedWindowsAppSdk.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HostedWindowsAppSdk"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls1="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d">
+
+    <controls1:DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+        <Border  controls1:DockPanel.Dock="Bottom"
+                 BorderThickness="0 1 0 0"
+                 BorderBrush="{ThemeResource AppBarBorderThemeBrush}">
+            <TextBlock Text="{x:Bind Status, Mode=OneWay}" Padding="5" FontSize="{ThemeResource ContentControlFontSize}"/>
+        </Border>
+        <Border  controls1:DockPanel.Dock="Top" Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                       HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                       HorizontalTextAlignment="Center">
+                Welcome to your Hosted Windows App SDK Application!
+            </TextBlock>
+        </Border>
+    </controls1:DockPanel>
+
+</Window>
