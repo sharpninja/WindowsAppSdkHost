@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{866D1621-C2C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommunityToolkit.Extensions.Hosting.WindowsAppSdk", "src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk\CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj", "{624647A5-F444-43BE-82CD-3C38ECA17BD9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project-templates", "project-templates", "{59093D20-3B21-11EC-BDE7-AF52EAA7DCFD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{59093D20-3B21-11EC-BDE7-AF52EAA7DCFD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostedWindowsAppSdk", "project-template\project\HostedWindowsAppSdk.csproj", "{2A3F2AE1-302E-4BB0-9B5F-6B4F9B20CBF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostedWindowsAppSdk", "templates\HostedWindowsAppSdk\HostedWindowsAppSdk.csproj", "{2A3F2AE1-302E-4BB0-9B5F-6B4F9B20CBF7}"
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "HostedWindowsAppSdk.Installer", "project-template\HostedWindowsAppSdk.Installer\HostedWindowsAppSdk.Installer.wapproj", "{AFC3E846-1DE5-409C-ACB5-A0C0281DA011}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "HostedWindowsAppSdk.Installer", "templates\HostedWindowsAppSdk.Installer\HostedWindowsAppSdk.Installer.wapproj", "{AFC3E846-1DE5-409C-ACB5-A0C0281DA011}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

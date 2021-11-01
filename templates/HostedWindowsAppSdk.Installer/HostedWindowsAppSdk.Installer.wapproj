@@ -24,7 +24,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
-    <EntryPointProjectUniqueName>..\project\HostedWindowsAppSdk.csproj</EntryPointProjectUniqueName>
+    <EntryPointProjectUniqueName>..\HostedWindowsAppSdk\HostedWindowsAppSdk.csproj</EntryPointProjectUniqueName>
     <PackageCertificateThumbprint>6E413E0389C267BDBAA09D649EDF07A950E85BFD</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>HostedWindowsAppSdk.Installer_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
@@ -53,6 +53,6 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0-preview3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\project\HostedWindowsAppSdk.csproj" />
+    <ProjectReference Include="..\HostedWindowsAppSdk\HostedWindowsAppSdk.csproj" />
   </ItemGroup>
 </Project>

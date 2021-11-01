@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="HostedWindowsAppSdk-70ba7700"
+    Name="HostedWindowsAppSdk"
     Publisher="CN=CommunityToolkit"
     Version="1.0.0.0" />
 
