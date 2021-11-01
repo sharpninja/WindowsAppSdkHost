@@ -45,28 +45,28 @@ jobs:
       if: ${{ github.event_name != 'release' }}
       run: |
         echo "github.event_name: ${{ github.event_name }}"
-        dotnet build -c Debug --no-restore 
+        msbuild /t:Rebuild /p:Configuration=Debug,Platform=x64
     - name: Build Release
       if: ${{ github.event_name == 'release' }}
       run: |
         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
-        dotnet build -c Release --no-restore 
+        msbuild /t:Rebuild /p:Configuration=Release,Platform=x64
     - name: Dotnet Debug Tests
       if: ${{ github.event_name != 'release' }}
       run: |
         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
-        dotnet test -c Debug --no-restore
+        dotnet test -c Debug --no-build
     - name: Dotnet Release Tests
       if: ${{ github.event_name == 'release' }}
       run: |
         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
-        dotnet test -c Release --no-restore
+        dotnet test -c Release --no-build
     - name: Publish
       if: ${{ github.event_name == 'release' }}
       run: | 
         $outPath = (Join-Path . -Child packages)
         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
-        dotnet pack -c Release --no-restore --include-source --no-build -o $outPath 
+        dotnet pack -c Release --no-build --include-source -o $outPath 
         
         gci $outPath\*.nupkg -ErrorAction Stop
         gci $outPath\*.snupkg -ErrorAction Stop
