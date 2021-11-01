@@ -57,16 +57,16 @@ jobs:
       run: |
         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
         msbuild /t:Rebuild /p:Configuration=Release,Platform=x64 .\CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
-    - name: Dotnet Debug Tests
-      if: ${{ github.event_name != 'release' }}
-      run: |
-        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
-        dotnet test -c Debug --no-build
-    - name: Dotnet Release Tests
-      if: ${{ github.event_name == 'release' }}
-      run: |
-        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
-        dotnet test -c Release --no-build
+#     - name: Dotnet Debug Tests
+#       if: ${{ github.event_name != 'release' }}
+#       run: |
+#         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+#         dotnet test -c Debug --no-build
+#     - name: Dotnet Release Tests
+#       if: ${{ github.event_name == 'release' }}
+#       run: |
+#         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+#         dotnet test -c Release --no-build
     - name: Publish
       if: ${{ github.event_name == 'release' }}
       run: | 
