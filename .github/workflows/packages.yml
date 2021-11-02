@@ -77,7 +77,7 @@ jobs:
       uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
       with:
         # Path of NuPkg
-        nupkg-path: ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk\bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*nupkg
+        nupkg-path: ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk\bin\x64\Debug\*nupkg
         # package repository owner
         repo-owner: sharpninja
         # user account
