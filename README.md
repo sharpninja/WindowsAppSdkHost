@@ -2,6 +2,8 @@
 
 Allows hosting a Windows App SDK Application in an `IHost` that manages the lifecycle of the hosted Application.
 
+[![Packages](https://github.com/sharpninja/WindowsAppSdkHost/actions/workflows/packages.yml/badge.svg)](https://github.com/sharpninja/WindowsAppSdkHost/actions/workflows/packages.yml)
+
 ## Usage
 
 __(Convert existing project or the default template's output)__
