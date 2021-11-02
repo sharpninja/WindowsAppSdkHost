@@ -1,0 +1,106 @@
+name: Packages
+
+on:
+  release:
+    types: [released]
+  push:
+    branches: [ master, main, release/* ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: windows-2022
+
+    steps:
+    - name: Event
+      env:       
+        event_name: ${{ github.event_name }}
+      run: echo "event_name $env:event_name"
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+        
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@master
+      with:
+        vs-prerelease: true
+        vs-version: 17
+        
+#     - name: Setup .NET
+#       uses: actions/setup-dotnet@v1
+#       with:
+#         dotnet-version: 6.0.x
+#         include-prerelease: true
+        
+    - name: Setup Scoop
+      run: |
+        iwr -useb get.scoop.sh | iex
+        scoop install gitversion
+        GitVersion
+        
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build Debug
+      if: ${{ github.event_name != 'release' }}
+      run: |
+        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+        msbuild /t:Rebuild /p:Configuration=Debug,Platform=x64 .\CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+    - name: Build Release
+      if: ${{ github.event_name == 'release' }}
+      run: |
+        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+        msbuild /t:Rebuild /p:Configuration=Release,Platform=x64 .\CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+        if(Test-File bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*.nupkg) {
+          $pkg = Get-ChildItem bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*.nupkg
+        }
+
+#     - name: Dotnet Debug Tests
+#       if: ${{ github.event_name != 'release' }}
+#       run: |
+#         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+#         dotnet test -c Debug --no-build
+#     - name: Dotnet Release Tests
+#       if: ${{ github.event_name == 'release' }}
+#       run: |
+#         set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+#         dotnet test -c Release --no-build
+
+    - name: GitHub Packages
+      if: ${{ github.event_name != 'release' }}
+      uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
+      with:
+        # Path of NuPkg
+        nupkg-path: ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk\bin\x64\Debug\CommunityToolkit.Extensions.Hosting.WindowsAppSdk*nupkg
+        # package repository owner
+        repo-owner: sharpninja
+        # user account
+        gh-user: sharpninja
+        # access token
+        token: ${{ secrets.GITHUB_TOKEN }}
+        # skip publishing duplicated package(s)
+        skip-duplicate: true
+        
+    - name: Nuget Publish
+      if: ${{ github.event_name == 'release' }}
+      run: | 
+        $outPath = (Join-Path . -Child packages)
+        set-location ${{ github.workspace }}\src\CommunityToolkit.Extensions.Hosting.WindowsAppSdk
+        dotnet pack -c Release --no-build --include-source -o $outPath 
+        
+        gci $outPath\*.nupkg -ErrorAction Stop
+        gci $outPath\*.snupkg -ErrorAction Stop
+        
+        gci $outPath\*.nupkg | forEach-Object -process {
+          dotnet nuget push $_ -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
+        }
+        gci $outPath\*.snupkg | forEach-Object -process {
+          dotnet nuget push $_ -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
+        }
+        
