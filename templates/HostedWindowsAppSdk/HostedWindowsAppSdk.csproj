@@ -30,7 +30,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.1" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0-preview3" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
         <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="1.0.0-experimental1" />
         <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="1.0.0-experimental1" />
         <Manifest Include="$(ApplicationManifest)" />
