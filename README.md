@@ -17,7 +17,7 @@ __(Convert existing project or the default template's output)__
 public static class Program
 {
     [STAThread]
-    public static Task Main(string[] args)
+    public static void Main(string[] args)
     {
         var builder = new WindowsAppSdkHostBuilder<App>();
 
@@ -31,7 +31,7 @@ public static class Program
 
         var app = builder.Build();
 
-        return app.StartAsync();
+        app.StartAsync().GetAwaiter().GetResult();
     }
 }
 ```
