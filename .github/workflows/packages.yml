@@ -13,6 +13,8 @@ jobs:
   publish-to-github:
     runs-on: windows-2022
     if: ${{ github.event_name != 'release' }}
+    env:
+      ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
     steps:
     - name: Event
       env:       
@@ -42,13 +44,13 @@ jobs:
       run: dotnet restore
       
     - name: Build Debug
-      run: msbuild /t:build /p:Configuration=Debug /p:PackageOutputPath=nuget /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+      run: msbuild /t:build /p:Configuration=Debug /p:PackageOutputPath="${{ env:ARTIFACT_FOLDER }}" /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
       
     - name: GitHub Packages
       uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
       with:
         # Path of NuPkg
-        nupkg-path: './nuget/*.nupkg'
+        nupkg-path: '${{ env:ARTIFACT_FOLDER }}/*.nupkg'
         # package repository owner
         repo-owner: sharpninja
         # user account
@@ -61,6 +63,8 @@ jobs:
   publish-to-nuget:
     runs-on: windows-2022
     if: ${{ github.event_name == 'release' }}
+    env:
+      ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
     steps:
     - name: Event
       env:       
@@ -90,13 +94,13 @@ jobs:
       run: dotnet restore
       
     - name: Build
-      run: msbuild /t:build /p:Configuration=Release /p:PackageOutputPath=nuget /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+      run: msbuild /t:build /p:Configuration=Release /p:PackageOutputPath="${{ env:ARTIFACT_FOLDER }}" /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
 
     - name: Attach nuget packages to Github releases
       uses: softprops/action-gh-release@v1
       with:
-        files: "./nuget/*.nupkg"
+        files: "${{ env:ARTIFACT_FOLDER }}/*.nupkg"
 
 #    - name: Nuget Publish
-#      run: dotnet nuget push "C:/nuget/*.nupkg" -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
+#      run: dotnet nuget push "${{ env:ARTIFACT_FOLDER }}/*.nupkg" -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
         
