@@ -42,7 +42,7 @@ jobs:
       run: dotnet restore
       
     - name: Build Debug
-      run: dotnet ./src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj pack -c Debug --include-source -o $outPath C:/nuget
+      run: dotnet pack ./src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj -c Debug --include-source -o $outPath C:/nuget
       
     - name: GitHub Packages
       uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
@@ -90,8 +90,13 @@ jobs:
       run: dotnet restore
       
     - name: Build
-      run: dotnet ./src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj pack -c Release --include-source -o $outPath C:/nuget
+      run: dotnet pack ./src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj -c Release --include-source -o $outPath C:/nuget
 
-    - name: Nuget Publish
-      run: dotnet nuget push "C:/nuget/*.nupkg" -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
+    - name: Attach nuget packages to Github releases
+      uses: softprops/action-gh-release@v1
+      with:
+        files: "C:/nuget/*.nupkg"
+
+#    - name: Nuget Publish
+#      run: dotnet nuget push "C:/nuget/*.nupkg" -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
         
