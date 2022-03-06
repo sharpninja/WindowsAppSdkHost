@@ -42,13 +42,16 @@ jobs:
       run: dotnet restore
       
     - name: Build Debug
-      run: msbuild /t:pack /p:Configuration=Debug /p:OutputPath=C:/nuget /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+      run: msbuild /t:build /p:Configuration=Debug /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+
+    - name: Pack
+      run: msbuild /t:pack /p:Configuration=Debug /p:OutputPath=nuget /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
       
     - name: GitHub Packages
       uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
       with:
         # Path of NuPkg
-        nupkg-path: 'C:/nuget/*.nupkg'
+        nupkg-path: './nuget/*.nupkg'
         # package repository owner
         repo-owner: sharpninja
         # user account
@@ -89,13 +92,16 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
       
-    - name: Build
-      run: msbuild /t:pack /p:Configuration=Release /p:OutputPath=C:/nuget /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+    - name: Build Release
+      run: msbuild /t:build /p:Configuration=Release /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
+
+    - name: Pack
+      run: msbuild /t:pack /p:Configuration=Release /p:OutputPath=nuget /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
 
     - name: Attach nuget packages to Github releases
       uses: softprops/action-gh-release@v1
       with:
-        files: "C:/nuget/*.nupkg"
+        files: "./nuget/*.nupkg"
 
 #    - name: Nuget Publish
 #      run: dotnet nuget push "C:/nuget/*.nupkg" -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
