@@ -95,7 +95,11 @@ jobs:
       
     - name: Build
       run: msbuild /t:build /p:Configuration=Release /p:PackageOutputPath="$env:ARTIFACT_FOLDER" /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
-
+        
+    - name: Attach nuget packages to Github releases
+      uses: softprops/action-gh-release@v1
+      with:
+        files: "${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg"
 
     - name: Nuget Publish
       env:
@@ -103,9 +107,3 @@ jobs:
       run: |
         $nupkgs = GCI *.symbols.nupkg -Path $env:ARTIFACT_FOLDER -ErrorAction Stop -Verbose
         $nupkgs | foreach-object -Verbose -process { & dotnet nuget push "$_" -k "$env:NUGET_TOKEN" --source "https://api.nuget.org/v3/index.json" --skip-duplicate}
-        
-    - name: Attach nuget packages to Github releases
-      uses: softprops/action-gh-release@v1
-      with:
-        files: "${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg"
-
