@@ -102,7 +102,7 @@ jobs:
         nuget_token: ${{ secrets.NUGET_TOKEN }}
       run: |
         $nupkgs = GCI *.symbols.nupkg -Path $env:ARTIFACT_FOLDER -ErrorAction Stop -Verbose
-        $nupkgs | foreach-object -Verbose -process { & dotnet nuget push "$_.FullName" -k "$env:NUGET_TOKEN" --source "https://api.nuget.org/v3/index.json" --skip-duplicate}
+        $nupkgs | foreach-object -Verbose -process { & dotnet nuget push "$_" -k "$env:NUGET_TOKEN" --source "https://api.nuget.org/v3/index.json" --skip-duplicate}
         
     - name: Attach nuget packages to Github releases
       uses: softprops/action-gh-release@v1
