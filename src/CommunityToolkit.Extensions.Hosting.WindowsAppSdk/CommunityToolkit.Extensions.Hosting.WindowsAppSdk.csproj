@@ -13,6 +13,8 @@
     <Company>Payton Byrd (The Sharp Ninja) &lt;ninja@thesharp.ninja&gt;</Company>
     <Description>Allows hosting a Windows App SDK Application in an `IHost` that manages the lifecycle of the hosted Application.</Description>
     <Copyright>2021 - All Rights Reserved</Copyright>
+    <PackageId>SharpNinja.Extensions.WindowsAppSdkHost</PackageId>
+    <PackageName>SharpNinja.Extensions.WindowsAppSdkHost</PackageName>
     <PackageProjectUrl>https://github.com/sharpninja/WindowsAppSdkHost</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/sharpninja/WindowsAppSdkHost</RepositoryUrl>
