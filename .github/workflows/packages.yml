@@ -102,5 +102,5 @@ jobs:
         files: "${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg"
 
     - name: Nuget Publish
-      run: dotnet nuget push "${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg" -k "${{ secrets.NUGET_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+      run: dotnet nuget push "${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg" -k "${{ secrets.NUGET_TOKEN }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
         
