@@ -101,6 +101,6 @@ jobs:
       with:
         files: "${{ env.ARTIFACT_FOLDER }}/*.nupkg"
 
-#    - name: Nuget Publish
-#      run: dotnet nuget push "${{ env.ARTIFACT_FOLDER }}/*.nupkg" -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
+    - name: Nuget Publish
+      run: dotnet nuget push "${{ env.ARTIFACT_FOLDER }}/*.nupkg" -k "${{ secrets.NUGET_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
         
