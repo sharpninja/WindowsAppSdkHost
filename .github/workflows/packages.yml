@@ -96,11 +96,15 @@ jobs:
     - name: Build
       run: msbuild /t:build /p:Configuration=Release /p:PackageOutputPath="${{ env.ARTIFACT_FOLDER }}" /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
 
+
+    - name: Nuget Publish
+      env:
+        nuget_token: ${{ secrets.NUGET_TOKEN }}
+        files: ${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg
+      run: dotnet nuget push "$env:files" -k "$env:NUGET_TOKEN" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+        
     - name: Attach nuget packages to Github releases
       uses: softprops/action-gh-release@v1
       with:
         files: "${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg"
 
-    - name: Nuget Publish
-      run: dotnet nuget push "${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg" -k "${{ secrets.NUGET_TOKEN }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
-        
