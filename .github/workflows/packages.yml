@@ -72,6 +72,7 @@ jobs:
       env:
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        echo "Deploying [SharpNinja.Extensions.WindowsAppSdkHost.${env:VERSION}.symbols.nupkg] from [$env:ARTIFACT_FOLDER]"
         $githubUrl="https://nuget.pkg.github.com/OWNER/index.json"
         & dotnet nuget add source --username sharpninja --password $env:TOKEN --store-password-in-clear-text --name github $githubUrl
         $nupkgs = GCI SharpNinja.Extensions.WindowsAppSdkHost.${env:VERSION}.symbols.nupkg -Path $env:ARTIFACT_FOLDER -ErrorAction Stop -Verbose
