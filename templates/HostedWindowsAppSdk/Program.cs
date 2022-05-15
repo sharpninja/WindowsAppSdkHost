@@ -12,7 +12,7 @@ namespace HostedWindowsAppSdk
     public static class Program
     {
         [STAThread]
-        public static Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = new WindowsAppSdkHostBuilder<App>();
 
@@ -25,7 +25,7 @@ namespace HostedWindowsAppSdk
 
             var app = builder.Build();
 
-            return app.StartAsync();
+            app.StartAsync().GetAwaiter().GetResult();
         }
     }
 }

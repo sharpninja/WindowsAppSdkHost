@@ -14,6 +14,8 @@ jobs:
     runs-on: windows-2022
     env:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
+    outputs:
+      VERSION: "${{ steps.version.VERSION }}"
     steps:
     - name: Event
       env:       
@@ -37,6 +39,8 @@ jobs:
       run: |
         dotnet tool install gitversion.tool -g
         dotnet-gitversion
+    - id: version
+      run: echo "::set-output name=VERSION::${env:NuGetVersionV2}"
         
     - name: Restore dependencies
       run: msbuild /t:restore
@@ -48,7 +52,7 @@ jobs:
       uses: actions/upload-artifact@v3.0.0
       with:
         name: artifacts
-        path: ${{ env.ARTIFACT_FOLDER }} 
+        path: ${{ env.ARTIFACT_FOLDER }}
 
   publish-to-github:
     runs-on: windows-2022
@@ -56,25 +60,37 @@ jobs:
     needs: prepare
     env:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
+      VERSION: "${{ needs.prepare.output.VERSION }}"
     steps:
     - name: Download a Build Artifact
       uses: actions/download-artifact@v3.0.0
       with:
         name: artifacts
         path: ${{ env.ARTIFACT_FOLDER }}
-    - name: GitHub Packages
-      uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
-      with:
-        # Path of NuPkg
-        nupkg-path: '${{ env.ARTIFACT_FOLDER }}/SharpNinja.Extensions.WindowsAppSdkHost.${{ env.NuGetVersionV2 }}.symbols.nupkg'
-        # package repository owner
-        repo-owner: sharpninja
-        # user account
-        gh-user: sharpninja
-        # access token
-        token: ${{ secrets.GITHUB_TOKEN }}
-        # skip publishing duplicated package(s)
-        skip-duplicate: true
+    - run: dir ${{ env.ARTIFACT_FOLDER }} -recurse
+    - name: Nuget Publish
+      env:
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        $githubUrl="https://nuget.pkg.github.com/OWNER/index.json"
+        & dotnet nuget add source --username sharpninja --password $env:TOKEN --store-password-in-clear-text --name github $githubUrl
+        $nupkgs = GCI SharpNinja.Extensions.WindowsAppSdkHost.${env:VERSION}.symbols.nupkg -Path $env:ARTIFACT_FOLDER -ErrorAction Stop -Verbose
+        $nupkgs | foreach-object -Verbose -process { `
+          & dotnet nuget push "$_" -k "$env:TOKEN" --source github --skip-duplicate
+        }
+    # - name: GitHub Packages
+    #   uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
+    #   with:
+    #     # Path of NuPkg
+    #     nupkg-path: '${{ env.ARTIFACT_FOLDER }}/SharpNinja.Extensions.WindowsAppSdkHost.${{ env.NuGetVersionV2 }}.symbols.nupkg'
+    #     # package repository owner
+    #     repo-owner: sharpninja
+    #     # user account
+    #     gh-user: sharpninja
+    #     # access token
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     # skip publishing duplicated package(s)
+    #     skip-duplicate: true
 
   publish-to-nuget:
     runs-on: windows-2022
@@ -82,6 +98,7 @@ jobs:
     needs: prepare
     env:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
+      VERSION: "${{ needs.prepare.output.VERSION }}"
     steps:
     - name: Download a Build Artifact
       uses: actions/download-artifact@v3.0.0
