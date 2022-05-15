@@ -75,10 +75,11 @@ jobs:
       env:
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "Deploying [SharpNinja.Extensions.WindowsAppSdkHost.${env:NuGetVersionV2}.symbols.nupkg] from [$env:ARTIFACT_FOLDER]"
+        $NugetVersionV2=& dotnet-gitversion . /showvariable NuGetVersionV2
+        echo "Deploying [SharpNinja.Extensions.WindowsAppSdkHost.${NuGetVersionV2}.symbols.nupkg] from [$env:ARTIFACT_FOLDER]"
         $githubUrl="https://nuget.pkg.github.com/OWNER/index.json"
         & dotnet nuget add source --username sharpninja --password $env:TOKEN --store-password-in-clear-text --name github $githubUrl
-        $nupkgs = GCI SharpNinja.Extensions.WindowsAppSdkHost.${env:VERSION}.symbols.nupkg -Path $env:ARTIFACT_FOLDER -ErrorAction Stop -Verbose
+        $nupkgs = GCI SharpNinja.Extensions.WindowsAppSdkHost.${NuGetVersionV2}.symbols.nupkg -Path $env:ARTIFACT_FOLDER -ErrorAction Stop -Verbose
         $nupkgs | foreach-object -Verbose -process { `
           & dotnet nuget push "$_" -k "$env:TOKEN" --source github --skip-duplicate
         }
