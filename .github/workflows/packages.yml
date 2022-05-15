@@ -10,9 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-to-github:
+  prepare:
     runs-on: windows-2022
-    if: ${{ github.event_name != 'release' }}
     env:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
     steps:
@@ -34,7 +33,7 @@ jobs:
         vs-prerelease: true
         vs-version: 17
         
-    - name: Setup Scoop
+    - name: Setup GitVersion
       run: |
         dotnet tool install gitversion.tool -g
         dotnet-gitversion
@@ -44,7 +43,25 @@ jobs:
       
     - name: Build Debug
       run: msbuild /t:build /p:Configuration=Debug /p:PackageOutputPath="${{ env.ARTIFACT_FOLDER }}" /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
-      
+  
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.0.0
+      with:
+        name: artifacts
+        path: "${{ env.ARTIFACT_FOLDER }} 
+
+  publish-to-github:
+    runs-on: windows-2022
+    if: ${{ github.event_name != 'release' }}
+    env:
+      ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
+    steps:
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v3.0.0
+      with:
+        name: artifacts
+    # Destination path
+    path: # optional
     - name: GitHub Packages
       uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
       with:
@@ -65,36 +82,15 @@ jobs:
     env:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
     steps:
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v3.0.0
+      with:
+        name: artifacts
     - name: Event
       env:       
         event_name: ${{ github.event_name }}
       run: echo "event_name $env:event_name"
-    - name: Checkout
-      uses: actions/checkout@v1
-      
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-        
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@master
-      with:
-        vs-prerelease: true
-        vs-version: 17
-        
-    - name: Setup Scoop
-      run: |
-        iwr -useb get.scoop.sh | iex
-        scoop install gitversion
-        GitVersion
-        
-    - name: Restore dependencies
-      run: dotnet restore
-      
-    - name: Build
-      run: msbuild /t:build /p:Configuration=Release /p:PackageOutputPath="$env:ARTIFACT_FOLDER" /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
-        
+
     - name: Attach nuget packages to Github releases
       uses: softprops/action-gh-release@v1
       with:
