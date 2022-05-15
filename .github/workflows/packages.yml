@@ -53,6 +53,7 @@ jobs:
   publish-to-github:
     runs-on: windows-2022
     if: ${{ github.event_name != 'release' }}
+    needs: prepare
     env:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
     steps:
@@ -78,6 +79,7 @@ jobs:
   publish-to-nuget:
     runs-on: windows-2022
     if: ${{ github.event_name == 'release' }}
+    needs: prepare
     env:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
     steps:
