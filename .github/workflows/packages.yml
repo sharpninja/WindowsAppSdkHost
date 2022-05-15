@@ -42,7 +42,7 @@ jobs:
     - id: version
       run: echo "::set-output name=VERSION::${env:NuGetVersionV2}"
     - id: prepare_output_VERSION
-      run: echo $("[" + ${{ prepare.output.VERSION }} + "]")
+      run: echo $("[" + ${{ output.VERSION }} + "]")
     - id: needs_prepare_output_VERSION
       run: echo $("[" + ${{ needs.prepare.output.VERSION }} + "]")
     - run: throw "stop"
