@@ -43,9 +43,11 @@ jobs:
       run: echo "::set-output name=VERSION::${env:NuGetVersionV2}"
     - id: prepare_output_VERSION
       run: |
+        echo "`$env:V - $env:V"
         echo "`$env:VER - $env:VER"
         echo "`$env:VER_NEEDS - $env:VER_NEEDS"
       env:
+        V: ${{ VERSION }}
         VER: ${{ steps.version.VERSION }}
         VER_NEEDS: ${{ needs.prepare.output.version.VERSION }}
     - run: throw "stop"
