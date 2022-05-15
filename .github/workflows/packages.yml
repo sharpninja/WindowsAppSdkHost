@@ -39,18 +39,6 @@ jobs:
       run: |
         dotnet tool install gitversion.tool -g
         dotnet-gitversion
-    - id: version
-      run: echo "::set-output name=VERSION::${env:NuGetVersionV2}"
-    - id: prepare_output_VERSION
-      run: |
-        echo "`$env:V - $env:V"
-        echo "`$env:VER - $env:VER"
-        echo "`$env:VER_NEEDS - $env:VER_NEEDS"
-      env:
-        V: ${{ VERSION }}
-        VER: ${{ steps.version.VERSION }}
-        VER_NEEDS: ${{ needs.prepare.output.version.VERSION }}
-    - run: throw "stop"
     - name: Restore dependencies
       run: msbuild /t:restore
       
@@ -71,6 +59,10 @@ jobs:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
       VERSION: "${{ needs.prepare.output.VERSION }}"
     steps:
+    - name: Setup GitVersion
+      run: |
+        dotnet tool install gitversion.tool -g
+        dotnet-gitversion
     - name: Download a Build Artifact
       uses: actions/download-artifact@v3.0.0
       with:
@@ -81,7 +73,7 @@ jobs:
       env:
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "Deploying [SharpNinja.Extensions.WindowsAppSdkHost.${env:VERSION}.symbols.nupkg] from [$env:ARTIFACT_FOLDER]"
+        echo "Deploying [SharpNinja.Extensions.WindowsAppSdkHost.${env:NuGetVersionV2}.symbols.nupkg] from [$env:ARTIFACT_FOLDER]"
         $githubUrl="https://nuget.pkg.github.com/OWNER/index.json"
         & dotnet nuget add source --username sharpninja --password $env:TOKEN --store-password-in-clear-text --name github $githubUrl
         $nupkgs = GCI SharpNinja.Extensions.WindowsAppSdkHost.${env:VERSION}.symbols.nupkg -Path $env:ARTIFACT_FOLDER -ErrorAction Stop -Verbose
