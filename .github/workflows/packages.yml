@@ -36,12 +36,11 @@ jobs:
         
     - name: Setup Scoop
       run: |
-        iwr -useb get.scoop.sh | iex
-        scoop install gitversion
-        GitVersion
+        dotnet tool install gitversion.tool -g
+        dotnet-gitversion
         
     - name: Restore dependencies
-      run: dotnet restore
+      run: msbuild /t:restore
       
     - name: Build Debug
       run: msbuild /t:build /p:Configuration=Debug /p:PackageOutputPath="${{ env.ARTIFACT_FOLDER }}" /p:IncludeSource=true src/CommunityToolkit.Extensions.Hosting.WindowsAppSdk/CommunityToolkit.Extensions.Hosting.WindowsAppSdk.csproj
