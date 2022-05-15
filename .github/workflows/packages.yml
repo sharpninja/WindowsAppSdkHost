@@ -95,16 +95,8 @@ jobs:
       uses: actions/download-artifact@v3.0.0
       with:
         name: artifacts
-    - name: Event
-      env:
-        event_name: ${{ github.event_name }}
-      run: echo "event_name $env:event_name"
-
-    - name: Attach nuget packages to Github releases
-      uses: softprops/action-gh-release@v1
-      with:
-        files: "${{ env.ARTIFACT_FOLDER }}/*.symbols.nupkg"
-
+        path: ${{ env.ARTIFACT_FOLDER }}
+    - run: dir ${{ env.ARTIFACT_FOLDER }} -recurse
     - name: Nuget Publish
       env:
         nuget_token: ${{ secrets.NUGET_TOKEN }}
