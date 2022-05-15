@@ -24,10 +24,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
       
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
+    # - name: Setup .NET
+    #   uses: actions/setup-dotnet@v1
+    #   with:
+    #     dotnet-version: 6.0.x
         
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@master
@@ -59,6 +59,8 @@ jobs:
       ARTIFACT_FOLDER: "${{ github.workspace }}/nuget"
       VERSION: "${{ needs.prepare.output.VERSION }}"
     steps:
+    - name: Checkout
+      uses: actions/checkout@v1
     - name: Setup GitVersion
       run: |
         dotnet tool install gitversion.tool -g
