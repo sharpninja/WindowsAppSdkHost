@@ -42,9 +42,12 @@ jobs:
     - id: version
       run: echo "::set-output name=VERSION::${env:NuGetVersionV2}"
     - id: prepare_output_VERSION
-      run: echo $("[" + ${{ steps.version.VERSION }} + "]")
-    - id: needs_prepare_output_VERSION
-      run: echo $("[" + ${{ needs.prepare.output.version.VERSION }} + "]")
+      run: |
+        echo "`$env:VER - $env:VER"
+        echo "`$env:VER_NEEDS - $env:VER_NEEDS"
+      env:
+        VER: ${{ steps.version.VERSION }}
+        VER_NEEDS: ${{ needs.prepare.output.version.VERSION }}
     - run: throw "stop"
     - name: Restore dependencies
       run: msbuild /t:restore
