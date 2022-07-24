@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "CompleteWithInstaller (Package)": {
+      "commandName": "MsixPackage",
+      "alwaysReinstallApp": true,
+      "nativeDebugging": true
+    },
+    "CompleteWithInstaller (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

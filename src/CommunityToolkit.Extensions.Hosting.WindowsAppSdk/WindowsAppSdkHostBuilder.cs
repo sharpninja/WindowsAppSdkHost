@@ -14,6 +14,7 @@ namespace CommunityToolkit.Extensions.Hosting;
 public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
     where TApp : Application, new()
     {
+        private readonly string[] _args;
         private readonly List<Action<IConfigurationBuilder>> _configureHostConfigActions = new();
         private readonly List<Action<HostBuilderContext, IConfigurationBuilder>> _configureAppConfigActions = new();
         private readonly List<Action<HostBuilderContext, IServiceCollection>> _configureServicesActions = new();
@@ -27,10 +28,24 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
         private IServiceProvider _appServices;
         private PhysicalFileProvider _defaultProvider;
 
+        public WindowsAppSdkHostBuilder()
+        {
+            _args = Array.Empty<string>();
+        }
+
+        public WindowsAppSdkHostBuilder(string[] args)
+        {
+            _args = args;
+        }
+
         /// <summary>
         /// A central location for sharing state between components during the host building process.
         /// </summary>
-        public IDictionary<object, object> Properties { get; } = new Dictionary<object, object>();
+        public IDictionary<object, object> Properties
+        {
+            get;
+            set;
+        } = new Dictionary<object, object>();
 
         /// <summary>
         /// Set up the configuration for the builder itself. This will be used to initialize the <see cref="IHostEnvironment"/>
@@ -55,6 +70,16 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
         /// <returns>The same instance of the <see cref="IHostBuilder"/> for chaining.</returns>
         public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
         {
+            if (_args.Length > 0)
+            {
+                _configureAppConfigActions.Add(
+                    (_, builder) =>
+                    {
+                        builder.AddCommandLine(_args);
+                    }
+                );
+            }
+
             _configureAppConfigActions.Add(configureDelegate ?? throw new ArgumentNullException(nameof(configureDelegate)));
             return this;
         }
@@ -68,7 +93,7 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
         public IHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configureDelegate)
         {
             _configureServicesActions.Add(
-                (_, collection) =>
+                static (_, collection) =>
                 {
                     collection.AddSingleton<TApp>();
                 });
@@ -129,12 +154,12 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
             // REVIEW: If we want to raise more events outside of these calls then we will need to
             // stash this in a field.
             using var diagnosticListener = new DiagnosticListener("Microsoft.Extensions.Hosting");
-            const string hostBuildingEventName = "HostBuilding";
-            const string hostBuiltEventName = "HostBuilt";
+            const string HOST_BUILDING_EVENT_NAME = "HostBuilding";
+            const string HOST_BUILT_EVENT_NAME = "HostBuilt";
 
-            if (diagnosticListener.IsEnabled() && diagnosticListener.IsEnabled(hostBuildingEventName))
+            if (diagnosticListener.IsEnabled() && diagnosticListener.IsEnabled(HOST_BUILDING_EVENT_NAME))
             {
-                Write(diagnosticListener, hostBuildingEventName, this);
+                Write(diagnosticListener, HOST_BUILDING_EVENT_NAME, this);
             }
 
             BuildHostConfiguration();
@@ -144,9 +169,9 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
             CreateServiceProvider();
 
             var host = _appServices.GetRequiredService<IHost>();
-            if (diagnosticListener.IsEnabled() && diagnosticListener.IsEnabled(hostBuiltEventName))
+            if (diagnosticListener.IsEnabled() && diagnosticListener.IsEnabled(HOST_BUILT_EVENT_NAME))
             {
-                Write(diagnosticListener, hostBuiltEventName, host);
+                Write(diagnosticListener, HOST_BUILT_EVENT_NAME, host);
             }
 
             return host;
@@ -158,9 +183,7 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
             DiagnosticSource diagnosticSource,
             string name,
             T value)
-        {
-            diagnosticSource.Write(name, value);
-        }
+            => diagnosticSource.Write(name, value);
 
         private void BuildHostConfiguration()
         {
@@ -176,7 +199,7 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
 
         private void CreateHostingEnvironment()
         {
-            _hostingEnvironment = new HostingEnvironment
+            _hostingEnvironment = new()
             {
                 ApplicationName = _hostConfiguration[HostDefaults.ApplicationKey],
                 EnvironmentName = _hostConfiguration[HostDefaults.EnvironmentKey] ?? Environments.Production,
@@ -189,7 +212,7 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
                 _hostingEnvironment.ApplicationName = Assembly.GetEntryAssembly()?.GetName().Name;
             }
 
-            _hostingEnvironment.ContentRootFileProvider = _defaultProvider = new PhysicalFileProvider(_hostingEnvironment.ContentRootPath);
+            _hostingEnvironment.ContentRootFileProvider = _defaultProvider = new(_hostingEnvironment.ContentRootPath);
         }
 
         private string ResolveContentRootPath(string contentRootPath, string basePath)
@@ -198,27 +221,24 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
             {
                 return basePath;
             }
-            if (Path.IsPathRooted(contentRootPath))
-            {
-                return contentRootPath;
-            }
-            return Path.Combine(Path.GetFullPath(basePath), contentRootPath);
+
+            return Path.IsPathRooted(contentRootPath)
+                ? contentRootPath
+                : Path.Combine(Path.GetFullPath(basePath), contentRootPath);
         }
 
         private void CreateHostBuilderContext()
-        {
-            _hostBuilderContext = new HostBuilderContext(Properties)
+            => _hostBuilderContext = new(Properties)
             {
                 HostingEnvironment = _hostingEnvironment,
-                Configuration = _hostConfiguration
+                Configuration = _hostConfiguration,
             };
-        }
 
         private void BuildAppConfiguration()
         {
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(_hostingEnvironment.ContentRootPath)
-                .AddConfiguration(_hostConfiguration, shouldDisposeConfiguration: true);
+                .AddConfiguration(_hostConfiguration, true);
 
             foreach (var buildAction in _configureAppConfigActions)
             {
@@ -239,7 +259,7 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
             // register configuration as factory to make it dispose with the service provider
             services.AddSingleton(_ => _appConfiguration);
 #pragma warning disable CS0618 // Type or member is obsolete
-            services.AddSingleton(s => (IApplicationLifetime)s.GetService<IHostApplicationLifetime>());
+            services.AddSingleton(static s => (IApplicationLifetime)s.GetService<IHostApplicationLifetime>());
 #pragma warning restore CS0618 // Type or member is obsolete
             services.AddSingleton<IHostApplicationLifetime, ApplicationLifetime>();
 
@@ -280,9 +300,7 @@ public sealed class WindowsAppSdkHostBuilder<TApp> : IHostBuilder
             _ = _appServices.GetService<IConfiguration>();
         }
         private static void AddLifetime(ServiceCollection services)
-        {
-            services.AddSingleton<IHostLifetime, ConsoleLifetime>();
-        }
+            => services.AddSingleton<IHostLifetime, ConsoleLifetime>();
 
         private string GetResourceString(string resourceName)
         {

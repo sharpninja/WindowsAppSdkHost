@@ -3,16 +3,20 @@
 
 using Microsoft.Extensions.Hosting;
 
+// ReSharper disable ArrangeModifiersOrder
+
 namespace CommunityToolkit.Extensions.Hosting;
 
 
 /// <summary>
 /// Options for <see cref="IHost"/>
 /// </summary>
-public class HostOptions
+public sealed class HostOptions
 {
     [DllImport("Microsoft.ui.xaml.dll")]
-    internal static extern void XamlCheckProcessRequirements();
+#pragma warning disable IDE0036 // Order modifiers
+    extern internal static void XamlCheckProcessRequirements();
+#pragma warning restore IDE0036 // Order modifiers
 
 
     /// <summary>

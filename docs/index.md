@@ -1,11 +1,18 @@
+# Windows App SDK Host
+
+## WindowsAppSdkHostBuilder<TApp>
+
+Build the Host.
+
+Examples:
+
+```csharp
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 // ReSharper disable AccessToDisposedClosure
 
 using Microsoft.Extensions.Hosting;
-
-// ReSharper disable ArrangeModifiersOrder
 
 #pragma warning disable CS4014
 
@@ -23,7 +30,7 @@ internal sealed class WindowsAppSdkHost<TApp> : IHost, IAsyncDisposable
     private readonly IHostEnvironment _hostEnvironment;
     private readonly PhysicalFileProvider _defaultProvider;
     private IEnumerable<IHostedService> _hostedServices;
-    volatile private bool _stopCalled;
+    private volatile bool _stopCalled;
 
     public WindowsAppSdkHost(IServiceProvider services,
                 IHostEnvironment hostEnvironment,
@@ -50,7 +57,6 @@ internal sealed class WindowsAppSdkHost<TApp> : IHost, IAsyncDisposable
     public IServiceProvider Services
     {
         get;
-        set;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
@@ -262,3 +268,5 @@ internal sealed class WindowsAppSdkHost<TApp> : IHost, IAsyncDisposable
         }
     }
 }
+
+```

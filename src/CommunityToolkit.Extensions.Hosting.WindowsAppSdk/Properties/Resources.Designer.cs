@@ -97,6 +97,16 @@ namespace CommunityToolkit.Extensions.Hosting.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File name is null or empty. Specify a valid file name.
+        /// </summary>
+        internal static string SettingsStorageExtensions_SaveFileAsync_File_name_is_null_or_empty__Specify_a_valid_file_name {
+            get {
+                return ResourceManager.GetString("SettingsStorageExtensions_SaveFileAsync_File_name_is_null_or_empty__Specify_a_val" +
+                        "id_file_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Replacing IHostApplicationLifetime is not supported..
         /// </summary>
         internal static string WindowsAppSdkHost_WindowsAppSdkHost_Replacing_IHostApplicationLifetime_is_not_supported_ {
